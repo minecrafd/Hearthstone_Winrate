@@ -2,8 +2,9 @@ import networkx as nx
 import json
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from node2vec import Node2Vec
 
-with open('../dataset/hsreply_data/sorted/decks.json', 'r') as file:
+with open('../dataset/hsreply_data/decks.json', 'r') as file:
     decks = json.load(file)
 
 G = nx.Graph()
@@ -31,3 +32,8 @@ nx.draw(G, pos, with_labels=True)
 plt.axis('equal') 
 plt.savefig('graph.png')
 plt.show()
+
+node2vec = Node2Vec(G, dimensions=512, walk_length=30, num_walks=200, workers=4)
+model = node2vec.fit(window=10, min_count=1, batch_words=4)
+
+model.wv.save_word2vec_format('emb_512.txt')
